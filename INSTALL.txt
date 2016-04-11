@@ -1,0 +1,36 @@
+** Installation **
+
+
+For a web example (only for tweet): http://sentiment-analyser.openeditionlab.org/
+
+
+----------------------------
+
+** create python virtualenv **
+
+   Create a virtualenv
+virtualenv -p /usr/bin/python2.7 echoVE
+cd echoVE
+source bin/activate
+   Clone echo
+git clone path.to.echo.repository
+
+
+
+----------------------------
+
+** Install dependencies **
+
+Dependancies to compile scipy
+  apt-get install libblas-dev liblapack-dev gfortran
+
+Install dependencies
+pip install -r echo/requirements.txt
+
+If you have problem to install scikit-learn with pip:
+
+	Download the source package from http://pypi.python.org/pypi/scikit-learn/ , unpack the sources and cd into the source directory.
+	And install it:
+	python setup.py install
+
+
