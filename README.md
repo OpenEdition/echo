@@ -1,5 +1,5 @@
 
-##Echo : Analysis Sentiment
+##Echo : Sentiment Analysis 
 
 Echo is an open source software for opinion mining about tweet and text.
 
