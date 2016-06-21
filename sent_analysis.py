@@ -23,13 +23,13 @@ import json
 import argparse
 
 # argparse added by Gael Guibon
-parser = argparse.ArgumentParser(description='echo by Hussam Hamdam with added argparse by Gaël Guibon \n Sentiment analysis classifier by polarity.')
+parser = argparse.ArgumentParser(description='echo by Hussam Hamdam. Forked by Gaël Guibon in order to add a CLI \n Sentiment analysis classifier by polarity.')
 parser.add_argument('-train','--train', metavar='TRAIN', type=str, help='train file path')
 parser.add_argument('-c','--corpus', metavar='MODES', type=str, help='modes; "txt" for text or "tw" for tweets)')
 parser.add_argument('-test','--test', metavar='TEST', type=str, help='test file path')
 parser.add_argument('-f','--feature', metavar='FEATS', type=str, help='type of features : "zs" for z-score, "pol" for polarity or "dic" for twitterDictionary')
 parser.add_argument('-t', '--trainingFlag', action='store_true', help='use this flag to enable training')
-parser.add_argument('-o','--output', metavar='OUTPUT', type=str, help='fichier de sortie')
+parser.add_argument('-o','--output', metavar='OUTPUT', type=str, help='output file path')
 
 args = parser.parse_args()
 
@@ -318,7 +318,6 @@ def writeInputFile(txt_lst, filename):
     with open(filename, 'w') as f:
         f.writelines(ftxt_lst)
 
-    #TODO Write code for different option, corpus or training
 def getResult(txt_lst, corpus='txt', option='zs', training='N'):
     """Tagged a list of sentence in positive, negative or neutral opinion
     @param : List[string] ; the text (list of sentence) that you want to tagged. Each value of the list is a sentence.
@@ -418,5 +417,5 @@ if __name__ == '__main__':
         scores = cross_validation.cross_val_score(classifier1, x_train, y_train, cv=5)
         print scores
 
-    else: raise NameError('Invalid Option :Tweet(tw) or Text:(txt)')
+    else: raise NameError('Invalid Option : Please use "python sent_analysis.py -h" to see all available options')
 
