@@ -3,6 +3,8 @@
 Created on Thu Apr 24 13:33:02 2014
 
 @author: Hussam Hamdan
+
+Modified version by Gaël Guibon (command line interface added)
 """
 import re
 import happy_tokeniser as htok
@@ -18,6 +20,20 @@ import shutil
 import tempfile
 import os
 import json
+import argparse
+
+# argparse added by Gael Guibon
+parser = argparse.ArgumentParser(description='echo by Hussam Hamdam with added argparse by Gaël Guibon \n Sentiment analysis classifier by polarity.')
+parser.add_argument('-train','--train', metavar='TRAIN', type=str, help='train file path')
+parser.add_argument('-c','--corpus', metavar='MODES', type=str, help='modes; "txt" for text or "tw" for tweets)')
+parser.add_argument('-test','--test', metavar='TEST', type=str, help='test file path')
+parser.add_argument('-f','--feature', metavar='FEATS', type=str, help='type of features : "zs" for z-score, "pol" for polarity or "dic" for twitterDictionary')
+parser.add_argument('-t', '--trainingFlag', action='store_true', help='use this flag to enable training')
+parser.add_argument('-o','--output', metavar='OUTPUT', type=str, help='fichier de sortie')
+
+args = parser.parse_args()
+
+
 
 def readFile(filename):
     content = open(filename, "r").readlines()
@@ -338,33 +354,30 @@ def getResult(txt_lst, corpus='txt', option='zs', training='N'):
     shutil.rmtree(out_dir)
     return resultat
 
-
+# modified by Gael Guibon 
 if __name__ == '__main__':
     zs = dic = pol = pos = False
-    corpus = raw_input('\t\tWhat do you want evaluate?\n\t\tTweet : tw\n\t\tor Text: txt\n:Enter Your Options:')
 
-    if corpus=='tw':
+    if args.corpus=='tw':
         filename="./corpus/twitter-train-cleansed-B.txt"
         svmfname = "data/tweet.txt"
-        data, labels = readFile(filename)
-        x = raw_input('\t\tWhat are the features you want?\n\t\t1: Z score\n\t\t2: Polarity\n\t\t3: Twitter Dictionary\n\t\t0: Exit\nEnter Your Options:')
-        y = raw_input('\t\tDo you want training? \n\t\tYes:Y or No:N\nEnter Your Options:')
-        if x == "1":
+        data, labels = readFile(args.train)    
+        x = args.feature
+        y = args.training
+        if x == "zscore":
             zs = True
-        elif x == "2":
+        elif x == "polarity":
             pol = True
-        elif x == "3":
+        elif x == "twitterDictionary":
             dic = True
-        elif x== "0":
-            exit()
-        else: raise NameError('Invalid Option for process')
+        else: raise NameError('Invalid Feature Option')
 
-        if y=='N':
+        if y==False:
             print "Model Loading  ..."
             vocabhash = loadVocbFile("data/tweetvocab"+getFileName(pol,zs,pos,dic)+".txt")
             outf = "eval/hx" + getFileName(pol, zs, pos, dic) + ".txt"
             classifier1 = joblib.load(getFileName(pol, zs, pos, dic) + ".pkl")
-        elif y=='Y':
+        elif y==True:
             print "preprocessing ..."
             getTrainingFile(data, labels, "data/tweetvocab" + getFileName(pol,zs,pos,dic) + ".txt", svmfname, pol, zs, pos, dic, corpus)
             vocabhash = loadVocbFile("data/tweetvocab" + getFileName(pol,zs,pos,dic) + ".txt")
@@ -384,14 +397,14 @@ if __name__ == '__main__':
         p = subprocess.Popen(prog, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]
         print(p)
 
-    elif corpus=='txt':
+    elif args.corpus=='txt':
         filename = './corpus/review.txt'
-        data, labels = readFile(filename)
+        data, labels = readFile(args.train)
         svmfname = "trainab"
         zthreshold=-0.5
         zs = True # For corpus text: only zscore is avalaible
         print "preprocessing ..."
-        getTrainingFile(data, labels, "data/reviewvocab.txt", svmfname, pol, zs, pos, dic, corpus, zthreshold)
+        getTrainingFile(data, labels, "data/reviewvocab.txt", svmfname, pol, zs, pos, dic, args.corpus, zthreshold)
         vocabhash = loadVocbFile("data/reviewvocab.txt")
         outf = "eval/review-z.txt"
         print "Training ..."
@@ -400,9 +413,10 @@ if __name__ == '__main__':
         classifier1.fit(x_train, y_train)
         joblib.dump(classifier1, "review.pkl")
         print "predicting"
-        getTestFile('./', "input/review-input.txt", outf, vocabhash, classifier1, pol, zs, pos, dic, corpus)
+        getTestFile('./', "input/review-input.txt", outf, vocabhash, classifier1, pol, zs, pos, dic, args.corpus)
         print "Evaluation ..."
         scores = cross_validation.cross_val_score(classifier1, x_train, y_train, cv=5)
         print scores
 
     else: raise NameError('Invalid Option :Tweet(tw) or Text:(txt)')
+
