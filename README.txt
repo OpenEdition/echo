@@ -78,6 +78,31 @@ OUTPUT : list= [(opinioni, sentencei)]
 
 ----------------------------
 
+** Using the Command Line Interface (CLI) **
+
+You can access all details by typing :
+```
+python sent_analysis.py -h
+```
+This will give you the following informations :
+optional arguments:
+  -h, --help            show this help message and exit
+  -train, --train
+                        train file path
+  -c, --corpus
+                        modes; "txt" for text or "tw" for tweets)
+  -test, --test
+                        test file path
+  -f, --feature
+                        type of features : "zs" for z-score, "pol" for
+                        polarity or "dic" for twitterDictionary
+  -t, --trainingFlag    use this flag to enable training
+  -o, --output
+                        fichier de sortie
+
+
+----------------------------
+
 ** About the different files **
 
 Some ressources and input-data files are uses uses during process:
