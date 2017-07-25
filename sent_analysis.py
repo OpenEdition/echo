@@ -49,7 +49,7 @@ class Echo():
         self.classifier1 = joblib.load("./review.pkl")
 
     # added by GG to show the progress
-    def progressBar( self, value, endvalue, bar_length=100):
+    def progressBar(self, value, endvalue, bar_length=100):
         '''print the progress bar given the values.
         default bar_length = 100'''
         percent = float(value) / endvalue
@@ -416,11 +416,11 @@ class Echo():
 # modified by Gael Guibon 
 if __name__ == '__main__':
     zs = dic = pol = pos = False
-
+    echo = Echo()
     if args.corpus=='tw':
         filename="./corpus/twitter-train-cleansed-B.txt"
         svmfname = "data/tweet.txt"
-        data, labels = readFile(args.train)    
+        data, labels = echo.readFile(args.train)    
         x = args.feature
         y = args.trainingFlag
         if x == "zscore":
@@ -433,14 +433,14 @@ if __name__ == '__main__':
 
         if y==False:
             print "Model Loading  ..."
-            vocabhash = loadVocbFile("data/tweetvocab"+getFileName(pol,zs,pos,dic)+".txt")
-            outf = "eval/hx" + getFileName(pol, zs, pos, dic) + ".txt"
-            classifier1 = joblib.load(getFileName(pol, zs, pos, dic) + ".pkl")
+            vocabhash = echo.loadVocbFile("data/tweetvocab"+echo.getFileName(pol,zs,pos,dic)+".txt")
+            outf = "eval/hx" + echo.getFileName(pol, zs, pos, dic) + ".txt"
+            classifier1 = joblib.load(echo.getFileName(pol, zs, pos, dic) + ".pkl")
         elif y==True:
             print "preprocessing ..."
-            getTrainingFile(data, labels, "data/tweetvocab" + getFileName(pol,zs,pos,dic) + ".txt", svmfname, pol, zs, pos, dic, args.corpus)
-            vocabhash = loadVocbFile("data/tweetvocab" + getFileName(pol,zs,pos,dic) + ".txt")
-            outf = "eval/hx" + getFileName(pol, zs, pos, dic) + ".txt"
+            echo.getTrainingFile(data, labels, "data/tweetvocab" + echo.getFileName(pol,zs,pos,dic) + ".txt", svmfname, pol, zs, pos, dic, args.corpus)
+            vocabhash = echo.loadVocbFile("data/tweetvocab" + echo.getFileName(pol,zs,pos,dic) + ".txt")
+            outf = "eval/hx" + echo.getFileName(pol, zs, pos, dic) + ".txt"
             print "training"
             x_train, y_train = load_svmlight_file(svmfname)
             classifier1 = svm.LinearSVC()
@@ -458,13 +458,13 @@ if __name__ == '__main__':
 
     elif args.corpus=='txt':
         filename = './corpus/review.txt'
-        data, labels = readFile(args.train)
+        data, labels = echo.readFile(args.train)
         svmfname = "trainab"
         zthreshold=-0.5
         zs = True # For corpus text: only zscore is avalaible
         print "preprocessing ..."
-        getTrainingFile(data, labels, "data/reviewvocab.txt", svmfname, pol, zs, pos, dic, args.corpus, zthreshold)
-        vocabhash = loadVocbFile("data/reviewvocab.txt")
+        echo.getTrainingFile(data, labels, "data/reviewvocab.txt", svmfname, pol, zs, pos, dic, args.corpus, zthreshold)
+        vocabhash = echo.loadVocbFile("data/reviewvocab.txt")
         outf = "eval/review-z.txt"
         print "Training ..."
         x_train, y_train = load_svmlight_file(svmfname)
@@ -472,7 +472,7 @@ if __name__ == '__main__':
         classifier1.fit(x_train, y_train)
         joblib.dump(classifier1, "review.pkl")
         print "predicting"
-        getTestFile('./', "input/review-input.txt", outf, vocabhash, classifier1, pol, zs, pos, dic, args.corpus)
+        echo.getTestFile('./', "input/review-input.txt", outf, vocabhash, classifier1, pol, zs, pos, dic, args.corpus)
         print "Evaluation ..."
         scores = cross_validation.cross_val_score(classifier1, x_train, y_train, cv=5)
         print scores
