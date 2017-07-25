@@ -347,13 +347,8 @@ class Echo():
         f.close()
         return hasht
 
-    def writeInputFile(self, txt_lst, filename):
-        ftxt_lst = [''.join(('NA\t{}\tunknwn\t'.format(txt_lst.index(line)), line, '\n')) for line in txt_lst]
-        with open(filename, 'w') as f:
-            f.writelines(ftxt_lst)
-
     # duplicate version for speed and monitoring purpose by GG
-    def writeInputFileGG(self, txt_lst, filename):
+    def writeInputFile(self, txt_lst, filename):
         # ftxt_lst = [''.join(('NA\t',str(txt_lst.index(line)),'\tunknwn\t', line, '\n')) for line in txt_lst]
         
         ftxt_lst = list()
@@ -382,7 +377,7 @@ class Echo():
         print 4, "list st.encode"
         lst_tmp = [st.encode('utf-8') for st in txt_lst]
         print 5, "writeInputFile"
-        self.writeInputFileGG(lst_tmp, inputf)
+        self.writeInputFile(lst_tmp, inputf)
         print 6, "outputf"
         outputf = os.path.join(out_dir, 'tmpeval.txt')
         # print "Model Loading ..."
