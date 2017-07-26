@@ -43,10 +43,13 @@ args = parser.parse_args()
 
 class Echo():
 
-    def __init__(self):
-        print "Model Loading ..."
-        self.vocabhash = self.loadVocbFile("./data/reviewvocab.txt")
-        self.classifier1 = joblib.load("./review.pkl")
+    def __init__(self, training=True, vocab_path='./data/reviewvocab.txt', model_path='./review.pkl'):
+        if training:
+            print "echo start whithout model loaded"
+        else:
+            print "Model Loading ..."
+            self.vocabhash = self.loadVocbFile(vocab_path)
+            self.classifier1 = joblib.load(model_path)
 
     # added by GG to show the progress
     def progressBar(self, value, endvalue, bar_length=100):
@@ -363,7 +366,7 @@ class Echo():
 
 
     ## added a modified version by GG to try going faster and monitoring
-    def getResult(self, txt_lst, corpus='txt', option='zs', training='N'):
+    def getResult(self,  txt_lst, path='./', corpus='txt', option='zs', training='N'):
         """Tagged a list of sentence in positive, negative or neutral opinion
         @param : List[string] ; the text (list of sentence) that you want to tagged. Each value of the list is a sentence.
         @return: List[(set)] ; which the set is (sentence, opinion)"""
@@ -387,7 +390,7 @@ class Echo():
         pol = pos = dic = False
         zs = True
         print 8, "getTestFile"
-        self.getTestFile('./', inputf, outputf, self.vocabhash, self.classifier1, pol, zs, pos, dic, corpus)
+        self.getTestFile(path, inputf, outputf, self.vocabhash, self.classifier1, pol, zs, pos, dic, corpus)
         print 9, "outputf"
         with open(outputf) as f:
             resultat = []
