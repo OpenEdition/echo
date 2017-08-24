@@ -8,12 +8,12 @@ For a web example (only for tweet): http://sentiment-analyser.openeditionlab.org
 
 ** create python virtualenv **
 
-   Create a virtualenv
-virtualenv -p /usr/bin/python2.7 echoVE
-cd echoVE
-source bin/activate
    Clone echo
 git clone path.to.echo.repository
+   
+   Create a virtualenv
+virtualenv -p /usr/bin/python2.7 ./
+source bin/activate
 
 
 
