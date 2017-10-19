@@ -23,12 +23,7 @@ from sklearn.externals import joblib
 from sklearn import svm, cross_validation
 from sklearn.datasets import load_svmlight_file
 tokeniser = htok.Tokenizer(preserve_case=False)
-import shutil
-import tempfile
-import os
-import json
-import argparse
-import sys
+import shutil, tempfile, os, json, argparse, sys, time
 
 # argparse added by Gael Guibon
 parser = argparse.ArgumentParser(description='echo by Hussam Hamdam. Forked by Gaël Guibon in order to add a CLI \n Sentiment analysis classifier by polarity.')
@@ -37,6 +32,7 @@ parser.add_argument('-c','--corpus', metavar='MODES', type=str, help='modes; "tx
 parser.add_argument('-test','--test', metavar='TEST', type=str, help='test file path')
 parser.add_argument('-f','--feature', metavar='FEATS', type=str, help='type of features : "zs" for z-score, "pol" for polarity or "dic" for twitterDictionary')
 parser.add_argument('-t', '--trainingFlag', action='store_true', help='use this flag to enable training')
+parser.add_argument('-v', '--verbose', action='store_true', help='use this flag to enable progressionBar (will slightly slow computation)') 
 parser.add_argument('-o','--output', metavar='OUTPUT', type=str, help='output file path')
 
 args = parser.parse_args()
@@ -50,7 +46,23 @@ class Echo():
             print "Model Loading ..."
             self.vocabhash = self.loadVocbFile(vocab_path)
             self.classifier1 = joblib.load(model_path)
+            self.rep = {"\t": " ", "\r": "", "\n": "", "\\u002c": ",", "\\u2019": "'", "\\u2013": "-" , "\\u2013": "-"}
+            self.rep = dict((re.escape(k), v) for k, v in self.rep.iteritems())
+            self.pattern = re.compile("|".join(self.rep.keys()))
 
+    def stopWatch(self, value):
+        '''From seconds to Days;Hours:Minutes;Seconds'''
+        valueD = (((value/365)/24)/60)
+        Days = int (valueD)
+        valueH = (valueD-Days)*365
+        Hours = int(valueH)
+        valueM = (valueH - Hours)*24
+        valueM = (valueH - Hours)*24
+        valueS = (valueM - Minutes)*60
+        Seconds = int(valueS)
+        print Days,"days ;",Hours,"hours :",Minutes,"minutes ;",Seconds, "seconds"
+
+    
     # added by GG to show the progress
     def progressBar(self, value, endvalue, bar_length=100):
         '''print the progress bar given the values.
