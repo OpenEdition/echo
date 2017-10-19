@@ -20,9 +20,9 @@ def loadzscore(corpus, path):
         print "*****************************************************"
         print path
         zdic = ["".join((path, filename)) for filename in ("cr0.txt", "cr1.txt", "cr2.txt")]
-    f[0] = open(zdic[0], "r").readlines()
-    f[1] = open(zdic[1], "r").readlines()
-    f[2] = open(zdic[2], "r").readlines()
+    f[0] = open("".join([path, zdic[0]]), "r").readlines()
+    f[1] = open("".join([path, zdic[1]]), "r").readlines()
+    f[2] = open("".join([path, zdic[2]]), "r").readlines()
     for i in range(3):
         for line in f[i]:
             line = line.replace("\n", "").split("\t")
@@ -38,7 +38,7 @@ def getrealZscore(data, labels):
     dict_3 = [dict(), dict(), dict()]
     count_3 = [0, 0, 0]
     nvocab = 0
-    for i in range(len(data)):
+    for i in xrange(len(data)):
         sentence = data[i]
         polarity = labels[i]
         sentence = twzscore2.splitfun4tweet(sentence)
@@ -60,7 +60,7 @@ def getrealZscore(data, labels):
     xy = [[[], []], [[], []], [[], []]]
     index = 0
     for k, v in allvocab.iteritems():
-        for i in range(3):
+        for i in xrange(3):
             if dict_3[i].has_key(k):
                 p = ((allvocab[k]) / float(nvocab))
                 all[i] = str(k) + "\t" + str((dict_3[i][k] - count_3[i] * p) / (sqrt(count_3[i] * p * (1 - p)))) + "\n" + all[i]
@@ -73,9 +73,9 @@ def getrealZscore(data, labels):
                 xy[i][0].append(index)
                 xy[i][1].append((0 - count_3[i] * p) / (sqrt(count_3[i] * p * (1 - p))))
                 index += 1
-    f0 = open(path + "data/zneg.txt", "w")
-    f1 = open(path + "data/znet.txt", "w")
-    f2 = open(path + "data/zpos.txt", "w")
+    f0 = open("".join([path, "data/zneg.txt"]), "w")
+    f1 = open("".join([path, "data/znet.txt"]), "w")
+    f2 = open("".join([path, "data/zpos.txt"]), "w")
     f0.writelines(all[0])
     f1.writelines(all[1])
     f2.writelines(all[2])
