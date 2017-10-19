@@ -425,12 +425,14 @@ if __name__ == '__main__':
         svmfname = "data/tweet.txt"
         data, labels = echo.readFile(args.train)    
         x = args.feature
+        x = x.split('+')
+        print x
         y = args.trainingFlag
-        if x == "zs":
+        if "zs" in x:
             zs = True
-        elif x == "pol":
+        elif "pol" in x:
             pol = True
-        elif x == "dic":
+        elif "dic" in x::
             dic = True
         else: raise NameError('Invalid Feature Option')
 
