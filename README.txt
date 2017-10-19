@@ -85,21 +85,32 @@ You can access all details by typing :
 python sent_analysis.py -h
 ```
 This will give you the following informations :
-optional arguments:
-  -h, --help            show this help message and exit
-  -train, --train
-                        train file path
-  -c, --corpus
-                        modes; "txt" for text or "tw" for tweets)
-  -test, --test
-                        test file path
-  -f, --feature
-                        type of features : "zs" for z-score, "pol" for
-                        polarity or "dic" for twitterDictionary
-  -t, --trainingFlag    use this flag to enable training
-  -o, --output
-                        fichier de sortie
+usage: sent_analysis.py [-h] [-train TRAIN] [-c MODES] [-test TEST] [-f FEATS]
+                        [-t] [-v] [-o OUTPUT]
 
+echo by Hussam Hamdam. Forked by Gaël Guibon in order to add a CLI and speed
+optimization Sentiment analysis classifier by polarity.
+
+ optional arguments:
+	-h, --help            
+		show this help message and exit
+	-train TRAIN, --train TRAIN
+		train file path
+	-c MODES, --corpus MODES
+		modes; "txt" for text or "tw" for tweets)
+	-test TEST, --test TEST
+		test file path
+	-f FEATS, --feature FEATS
+		type of features : "zs" for z-score, "pol" for polarity or "dic" for twitterDictionary or combine them "zs+pol+dic"
+	-t, --trainingFlag    use this flag to enable training
+	-v, --verbose         use this flag to enable progressionBar (will slightly slow computation)
+	-o OUTPUT, --output OUTPUT
+	output file path
+This example command:
+$python sent_analysis.py -c tw -f pol+zs+dic -t -train corpus/twitter-train-cleansed-B.txt -test input/semeval-tweet-test-B-input.txt
+
+Will give you these results:
+eval/hxt-z-pol-dic.txt	LiveJournal2014	61.86	SMS2013	56.30	Twitter2013	59.51	Twitter2014	61.42	Twitter2014Sarcasm	42.11	
 
 ----------------------------
 

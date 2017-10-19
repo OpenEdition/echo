@@ -255,46 +255,49 @@ class Echo():
             z_dict = zscore.loadzscore(corpus, path)
         resfile = open(outputsvmfile, "w")
         if TwitterDict:
-            dicht = loadDic(path, corpus)
+            dicht = self.loadDic(path, corpus)
         index = 0
         f = open(inputfile, "r")
         lines = f.readlines()
         all_txt = ""
-        indexLine = 0
-        total = len(lines)
-        for row1 in lines:
-            indexLine += 1
-            self.progressBar(indexLine, total)
-            row1 = row1.replace("\n", "").split("\t")
-            id1 = row1[0]
-            id2 = row1[1]
-            # print "row1 = ", row1
-            if len(row1) < 1 :
-                # print row1
-                exit(0)
-            sentence = row1[3].lower()
-            zsum = [0, 0, 0, 0]
-            if Z_score:
-                zsum = self.predictzvalues(sentence, z_dict, zthreshold)
-            rowhash = {}
-            count = 0
-            if TwitterDict:
-                for k, v in dicht.iteritems():
-                    if sentence.find(k) != -1:
-                        sentence += " " + v
-            newt = self.splitfun4tweet(sentence)
-            priorpol = [0, 0, 0, 0]
-            postags = [0, 0, 0, 0, 0]
-            if POS:
-                aspect = ut.getPosTags(sentence)
-                paspect = str(aspect)
-                postags[0] = len(paspect.split("'NN")) - 1
-                postags[1] = len(paspect.split("'JJ")) - 1
-                postags[2] = len(paspect.split("'RB'")) - 1
-                postags[3] = len(paspect.split("'VB")) - 1
-                postags[4] = len(paspect.split("'CC'")) - 1
-            for token in newt:
-                if (len(token) > tokenlngth):
+        ## added in order to fasten the concatenation by using cpython
+        all_txt_list = list()
+        append = all_txt_list.append
+        lower = str.lower
+        resfile = open(outputsvmfile, "w")
+        resfile.close()
+        with open(outputsvmfile, "a") as resfile:
+            total = len(lines)
+            for indexLine, row1 in enumerate(lines):
+                self.progressBar(indexLine, total)
+                row1 = row1.replace("\n", "").split("\t")
+                if len(row1) < 1 :  exit(0)
+                id1 = row1[0]
+                id2 = row1[1]
+
+                sentence = lower(row1[3])
+                zsum = [0, 0, 0, 0]
+                if Z_score:
+                    zsum = self.predictzvalues(sentence, z_dict, zthreshold)
+                rowhash = {}
+                count = 0
+                if TwitterDict:
+                    for k, v in dicht.iteritems():
+                        if sentence.find(k) != -1:
+                            sentence += " " + v
+                newt = self.splitfun4tweet(sentence)
+                priorpol = [0, 0, 0, 0]
+                postags = [0, 0, 0, 0, 0]
+                if POS:
+                    aspect = ut.getPosTags(sentence)
+                    paspect = str(aspect)
+                    postags[0] = len(paspect.split("'NN")) - 1
+                    postags[1] = len(paspect.split("'JJ")) - 1
+                    postags[2] = len(paspect.split("'RB'")) - 1
+                    postags[3] = len(paspect.split("'VB")) - 1
+                    postags[4] = len(paspect.split("'CC'")) - 1
+                for token in newt:
+                    if (len(token) > tokenlngth):
                     if prepolarity:
                         pol1 = sentii.getWordsenti(token, ludic)
                         pol2 = sentii.getWordsenti(token, lexdic)
@@ -354,17 +357,10 @@ class Echo():
 
     # duplicate version for speed and monitoring purpose by GG
     def writeInputFile(self, txt_lst, filename):
-        # ftxt_lst = [''.join(('NA\t',str(txt_lst.index(line)),'\tunknwn\t', line, '\n')) for line in txt_lst]
-        
-        ftxt_lst = list()
-        i = 0
-        for line in txt_lst:
-            i += 1
-            self.progressBar(i, len(txt_lst))
-            fline = ''.join(('NA\t',str(txt_lst.index(line)),'\tunknwn\t', line, '\n'))
-            ftxt_lst.append(fline)
-        with open(filename, 'w') as f:
-            f.writelines(ftxt_lst)
+        with open(filename, "a") as myfile:
+            for i, line in enumerate(txt_lst):
+                self.progressBar(i, len(txt_lst))
+                myfile.write( "NA\t%s\tunknwn\t%s\n" % (str(txt_lst.index(line)), line) )
 
 
     ## added a modified version by GG to try going faster and monitoring
@@ -420,6 +416,8 @@ class Echo():
 
 # modified by Gael Guibon 
 if __name__ == '__main__':
+    # time starting point
+    startTime = time.time()
     zs = dic = pol = pos = False
     echo = Echo()
     if args.corpus=='tw':
@@ -428,11 +426,11 @@ if __name__ == '__main__':
         data, labels = echo.readFile(args.train)    
         x = args.feature
         y = args.trainingFlag
-        if x == "zscore":
+        if x == "zs":
             zs = True
         elif x == "pol":
             pol = True
-        elif x == "twitterDictionary":
+        elif x == "dic":
             dic = True
         else: raise NameError('Invalid Feature Option')
 
@@ -454,7 +452,7 @@ if __name__ == '__main__':
         else: raise NameError('Invalid Option: training or not training?')
 
         print "Predicting ..."
-        getTestFile('./', "input/semeval-tweet-test-B-input.txt", outf, vocabhash, classifier1, pol, zs, pos, dic, args.corpus)
+        getTestFile('./', args.test, outf, vocabhash, classifier1, pol, zs, pos, dic, args.corpus)
         print "Evaluation ..."
         prog = "perl eval/score-semeval2014-task9-subtaskB.pl " + outf
         import subprocess
@@ -477,10 +475,10 @@ if __name__ == '__main__':
         classifier1.fit(x_train, y_train)
         joblib.dump(classifier1, "review.pkl")
         print "predicting"
-        echo.getTestFile('./', "input/review-input.txt", outf, vocabhash, classifier1, pol, zs, pos, dic, args.corpus)
+        echo.getTestFile('./', args.test, outf, vocabhash, classifier1, pol, zs, pos, dic, args.corpus)
         print "Evaluation ..."
         scores = cross_validation.cross_val_score(classifier1, x_train, y_train, cv=5)
         print scores
 
     else: raise NameError('Invalid Option : Please use "python sent_analysis.py -h" to see all available options')
-
+    echo.stopWatch(time.time() - startTime) 
