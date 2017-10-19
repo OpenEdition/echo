@@ -434,8 +434,8 @@ if __name__ == '__main__':
             pol = True
         elif "dic" in x::
             dic = True
-        else: raise NameError('Invalid Feature Option')
-
+        if "dic" not in x and "pol" not in x and "zs" not in x: raise NameError('Invalid Feature Option')
+        print zs, pol, dic
         if y==False:
             print "Model Loading  ..."
             vocabhash = echo.loadVocbFile("data/tweetvocab"+echo.getFileName(pol,zs,pos,dic)+".txt")
