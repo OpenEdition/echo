@@ -105,26 +105,16 @@ class Echo():
         return dicth
 
     def getpolarityid(self, polarity):
-        if polarity == "negative":
-            return 0
-        elif polarity == "neutral":
-            return 1
-        elif polarity == "positive":
-            return 2
+        map_polarities = {"0":"negative", "1":"neutral", "2":"positive"}
+        return map_polarities[str(int(polarity))]
 
     def getPolaritynam(self, polarity):
-        if polarity == 0:
-            return "negative"
-        elif polarity == 1:
-            return "neutral"
-        elif polarity == 2:
-            return "positive"
+        map_polarities = {"0":"negative", "1":"neutral", "2":"positive"}
+        return map_polarities[str(int(polarity))]
 
     def splitfun4tweet(self, doc):
         doc = doc.decode('utf8', errors='ignore').encode('ascii', errors='ignore')
-        doc = doc.replace("\t", " ").replace("\r", "").replace("\n", "").lower()
-        doc = doc.replace("\\u002c", ",").replace("\\u2019", "'")
-        doc = doc.replace("\\u2013", "-").replace("\\u2013", "-")
+        doc = self.pattern.sub(lambda m: self.rep[re.escape(m.group(0))], doc.lower())
         y = re.findall(r'@[a-z0-9]+', doc)
         for y1 in y:
             doc = doc.replace(y1, "uuser")
@@ -185,7 +175,7 @@ class Echo():
 
         # tweet dictionary loading (expression,emotion icons)
         if TwitterDict:
-            dicht = loadDic(path, corpus)
+            dicht = self.loadDic(path, corpus)
         vocid = i
 
         for i in range(len(data)):
@@ -201,7 +191,7 @@ class Echo():
                 postags[3] = len(paspect.split("'VB")) - 1
                 postags[4] = len(paspect.split("'CC'")) - 1
             if Z_score:
-                zsum = predictzvalues(text, z_dict, zthreshold)
+                zsum = self.predictzvalues(text, z_dict, zthreshold)
             # add the emotions
             if TwitterDict:
                 for k, v in dicht.iteritems():
