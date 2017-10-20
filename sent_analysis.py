@@ -67,7 +67,7 @@ class Echo():
         percent = float(value) / endvalue
         arrow = '-' * int(round(percent * bar_length)-1) + '>'
         spaces = ' ' * (bar_length - len(arrow))
-        sys.stdout.write("\rPercent: [{0}] {1}%".format(arrow + spaces, int(round(percent * 100))))
+        sys.stdout.write("\rPercent: [{0}] {1}%\n".format(arrow + spaces, int(round(percent * 100))))
         sys.stdout.flush()
 
     def readFile(self, filename):
@@ -238,7 +238,6 @@ class Echo():
         vocf.close()
         f.close()
 
-    # duplicate for monitoring and speed purpose by GG
     def getTestFile(self, path, inputfile, outputsvmfile, inputvocab, classifier, prepolarity, Z_score, POS, TwitterDict, corpus, zthreshold=3, tokenlngth=1):
         '''This function generates the test file, it takes the test file path and the vocabulary file (inputvocab), the classifier (classifier) and the options
         in order to predict the polarity of each tweet in the test file'''
@@ -264,7 +263,7 @@ class Echo():
         with open(outputsvmfile, "a") as resfile:
             total = len(lines)
             for indexLine, row1 in enumerate(lines):
-                # self.progressBar(indexLine, total)
+                self.progressBar(indexLine, total)
                 row1 = row1.replace("\n", "").split("\t")
                 if len(row1) < 1 :  exit(0)
                 id1 = row1[0]
@@ -350,7 +349,6 @@ class Echo():
     def writeInputFile(self, txt_lst, filename):
         with open(filename, "a") as myfile:
             for i, line in enumerate(txt_lst):
-                self.progressBar(i, len(txt_lst))
                 myfile.write( "NA\t%s\tunknwn\t%s\n" % (str(txt_lst.index(line)), line.encode('utf-8')))
 
     def getResult(self,  txt_lst, path='./', corpus='txt', option='zs', training='N'):
@@ -358,26 +356,20 @@ class Echo():
         @param : List[string] ; the text (list of sentence) that you want to tagged. Each value of the list is a sentence.
         @return: List[(set)] ; which the set is (sentence, opinion)"""
 
-        print 1
         inp_dir = tempfile.mkdtemp(prefix = 'data_sent_analysis')
-        print 2
         out_dir = tempfile.mkdtemp(prefix='eval_sent_anlysis')
-        print 3
         inputf = os.path.join(inp_dir, 'tmpdata.txt')
-        print 4, "list st.encode\n"
         lst_tmp = [st.decode('utf-8') for st in txt_lst]
         txt_lst = None # empty the list to save memory
-        print 5, "writeInputFile\n"
+        print "\t* Write input features to a file\n"
         self.writeInputFile(lst_tmp, inputf)
         lst_tmp = None # empty the list to save memory
-        print 6, "outputf\n"
         outputf = os.path.join(out_dir, 'tmpeval.txt')
-        print 7, "Predicting ...\n"
         pol = pos = dic = False
         zs = True
-        print 8, "getTestFile\n"
+        print "\t* Predicting\n"
         self.getTestFile(path, inputf, outputf, self.vocabhash, self.classifier1, pol, zs, pos, dic, corpus)
-        print 9, "noutputf\n"
+        print "\t* Noutputf\n"
         with open(outputf) as f:
             resultat = []
             append_resultat = resultat.append
@@ -394,9 +386,6 @@ class Echo():
         shutil.rmtree(out_dir)
         return resultat
 
-    
-
-# modified by Gael Guibon 
 if __name__ == '__main__':
     # time starting point
     startTime = time.time()
