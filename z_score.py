@@ -15,11 +15,11 @@ def loadzscore(corpus, path):
     dict_3 = [dict(), dict(), dict()]
     f = [0, 0, 0]
     if corpus=='tw':
-        zdic = ["".join((path, filename)) for filename in ("zneg.txt", "znet.txt", "zpos.txt")]
+        zdic = ["".join((path, filename)) for filename in ("/data/zneg.txt", "data/znet.txt", "data/zpos.txt")]
     elif corpus=='txt':
         print "*****************************************************"
         print path
-        zdic = ["".join((path, filename)) for filename in ("cr0.txt", "cr1.txt", "cr2.txt")]
+        zdic = ["".join((path, filename)) for filename in ("data/cr0.txt", "data/cr1.txt", "data/cr2.txt")]
     f[0] = open("".join([path, zdic[0]]), "r").readlines()
     f[1] = open("".join([path, zdic[1]]), "r").readlines()
     f[2] = open("".join([path, zdic[2]]), "r").readlines()

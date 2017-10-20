@@ -26,7 +26,7 @@ tokeniser = htok.Tokenizer(preserve_case=False)
 import shutil, tempfile, os, json, argparse, sys, time
 
 # argparse added by Gael Guibon
-parser = argparse.ArgumentParser(description='echo by Hussam Hamdam. Forked by Gaël Guibon in order to add a CLI \n Sentiment analysis classifier by polarity.')
+parser = argparse.ArgumentParser(description='echo is a sentiment analyser on twwet and text.')
 parser.add_argument('-train','--train', metavar='TRAIN', type=str, help='train file path')
 parser.add_argument('-c','--corpus', metavar='MODES', type=str, help='modes; "txt" for text or "tw" for tweets)')
 parser.add_argument('-test','--test', metavar='TEST', type=str, help='test file path')
@@ -46,7 +46,7 @@ class Echo():
             print "Model Loading ..."
             self.vocabhash = self.loadVocbFile(vocab_path)
             self.classifier1 = joblib.load(model_path)
-            self.rep = {"\t": " ", "\r": "", "\n": "", "\\u002c": ",", "\\u2019": "'", "\\u2013": "-", "\\u2013": "-"}
+            self.rep = {"\t":" ", "\r": "", "\n":"", "\\u002c":",", "\\u2019":"'", "\\u2013":"-", "\\u2013":"-"}
             self.rep = dict((re.escape(k), v) for k, v in self.rep.iteritems())
             self.pattern = re.compile("|".join(self.rep.keys()))
 
@@ -70,7 +70,6 @@ class Echo():
         percent = float(value) / endvalue
         arrow = '-' * int(round(percent * bar_length)-1) + '>'
         spaces = ' ' * (bar_length - len(arrow))
-
         sys.stdout.write("\rPercent: [{0}] {1}%".format(arrow + spaces, int(round(percent * 100))))
         sys.stdout.flush()
 
@@ -198,7 +197,7 @@ class Echo():
                 for k, v in dicht.iteritems():
                     if text.find(k) != -1:
                         text += " " + v
-            newtxt = splitfun4tweet(text)
+            newtxt = self.splitfun4tweet(text)
             instance = ""
             sentencedict = dict()
             priorpol = [0, 0, 0, 0]
@@ -346,7 +345,7 @@ class Echo():
         hasht = dict()
         f = open(vocfile, "r")
         lines = f.readlines()
-        for index, line in lines:
+        for index, line in enumerate(lines):
             voc = line.split("\t")
             hasht[voc[0]] = index
         f.close()
@@ -395,7 +394,7 @@ class Echo():
             for line in lines:
                 line_in_list = line.split("\t")
                 if (line_in_list[2] and line_in_list[3]) is not None:
-                append_resultat((line_in_list[2].decode('utf-8'), (line_in_list[3].replace('\n', '')).decode('utf-8')))
+                    append_resultat((line_in_list[2].decode('utf-8'), (line_in_list[3].replace('\n', '')).decode('utf-8')))
         os.unlink(outputf)
         os.unlink(inputf)
         shutil.rmtree(inp_dir)
@@ -422,7 +421,7 @@ if __name__ == '__main__':
             zs = True
         if "pol" in x:
             pol = True
-        if "dic" in x::
+        if "dic" in x:
             dic = True
         if "dic" not in x and "pol" not in x and "zs" not in x: raise NameError('Invalid Feature Option')
         print zs, pol, dic
