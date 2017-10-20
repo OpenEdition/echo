@@ -349,7 +349,7 @@ class Echo():
     def writeInputFile(self, txt_lst, filename):
         with open(filename, "a") as myfile:
             for i, line in enumerate(txt_lst):
-                myfile.write( "NA\t%s\tunknwn\t%s\n" % (str(txt_lst.index(line)), line.encode('utf-8')))
+                myfile.write( "NA\t%s\tunknwn\t%s\n" % (str(txt_lst.index(line)), line))
 
     def getResult(self,  txt_lst, path='./', corpus='txt', option='zs', training='N'):
         """Tagged a list of sentence in positive, negative or neutral opinion
@@ -359,7 +359,7 @@ class Echo():
         inp_dir = tempfile.mkdtemp(prefix = 'data_sent_analysis')
         out_dir = tempfile.mkdtemp(prefix='eval_sent_anlysis')
         inputf = os.path.join(inp_dir, 'tmpdata.txt')
-        lst_tmp = [st.decode('utf-8') for st in txt_lst]
+        lst_tmp = [st.encode('utf-8') for st in txt_lst]
         txt_lst = None # empty the list to save memory
         print "\t* Write input features to a file\n"
         self.writeInputFile(lst_tmp, inputf)
