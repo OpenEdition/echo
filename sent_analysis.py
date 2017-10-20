@@ -25,8 +25,7 @@ from sklearn.datasets import load_svmlight_file
 tokeniser = htok.Tokenizer(preserve_case=False)
 import shutil, tempfile, os, json, argparse, sys, time
 
-# argparse added by Gael Guibon
-parser = argparse.ArgumentParser(description='echo is a sentiment analyser on twwet and text.')
+parser = argparse.ArgumentParser(description='echo is a sentiment analyser on twet and text.')
 parser.add_argument('-train','--train', metavar='TRAIN', type=str, help='train file path')
 parser.add_argument('-c','--corpus', metavar='MODES', type=str, help='modes; "txt" for text or "tw" for tweets)')
 parser.add_argument('-test','--test', metavar='TEST', type=str, help='test file path')
@@ -62,8 +61,6 @@ class Echo():
         Seconds = int(valueS)
         print Days,"days ;",Hours,"hours :",Minutes,"minutes ;",Seconds, "seconds"
 
-    
-    # added by GG to show the progress
     def progressBar(self, value, endvalue, bar_length=100):
         '''print the progress bar given the values.
         default bar_length = 100'''
@@ -81,7 +78,6 @@ class Echo():
         count = [0, 0, 0]
         for line in content:
             i += 1
-            #line=unicodedata.normalize('NFKD', line).encode('ascii','ignore')
             line = line.split("\t")
             line[3] = line[3].replace("\n", "")
             line[2] = 2 if line[2] == "positive" else 0 if line[2] == "negative" else 1
@@ -351,15 +347,12 @@ class Echo():
         f.close()
         return hasht
 
-    # duplicate version for speed and monitoring purpose by GG
     def writeInputFile(self, txt_lst, filename):
         with open(filename, "a") as myfile:
             for i, line in enumerate(txt_lst):
                 self.progressBar(i, len(txt_lst))
-                myfile.write( "NA\t%s\tunknwn\t%s\n" % (str(txt_lst.index(line)), line) )
+                myfile.write( "NA\t%s\tunknwn\t%s\n" % (str(txt_lst.index(line)), line.encode('utf-8')))
 
-
-    ## added a modified version by GG to try going faster and monitoring
     def getResult(self,  txt_lst, path='./', corpus='txt', option='zs', training='N'):
         """Tagged a list of sentence in positive, negative or neutral opinion
         @param : List[string] ; the text (list of sentence) that you want to tagged. Each value of the list is a sentence.
@@ -372,7 +365,7 @@ class Echo():
         print 3
         inputf = os.path.join(inp_dir, 'tmpdata.txt')
         print 4, "list st.encode\n"
-        lst_tmp = [st.encode('utf-8') for st in txt_lst]
+        lst_tmp = [st.decode('utf-8') for st in txt_lst]
         txt_lst = None # empty the list to save memory
         print 5, "writeInputFile\n"
         self.writeInputFile(lst_tmp, inputf)
